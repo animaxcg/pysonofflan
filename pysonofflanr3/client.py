@@ -207,8 +207,7 @@ class SonoffLANModeClient:
                     # decrypt the message
                     iv = info.properties.get(b"iv")
                     data = sonoffcrypto.decrypt(data1, iv, self.api_key)
-                    self.logger.debug("penis")
-                    self.logger.debug("decrypted data~~~~~~~~~~~~~: %s", data)
+                    self.logger.debug("decrypted data: %s", data)
 
             else:
                 self.encrypted = False

@@ -1,0 +1,9 @@
+{
+  "name": "garden",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "dependencies": {
+    "tuyapi": "^6.1.1"
+  }
+}

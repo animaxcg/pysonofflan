@@ -23,19 +23,21 @@ def load_yaml(filename):
 def get_fahrenheit(degrees_celsius):
     return (degrees_celsius * 1.8) + 32
 
-def evaluate_rules(event):
+def evaluate_rules(event, device_id, logger):
     print(f"in evaluation event: {event}")
     rules = load_yaml('rules.yml')
     devices = load_yaml("device_info.yml")
-    # outside = {"some": "mapdata", "temperature": 12}
-    # green_house = {"some": "mapdata", "temperature": 12}
-    device_id = event.get("device_id")
+    logger.debug("Rules: %s", rules)
+    logger.debug("devices: %s", devices)
+    logger.debug("jmespath devices query string: %s", f"devices[?id=='{device_id}'].name")
+    # logger.debug("jmespath rules query string: %s", f"rules[?name=='{device_name}']")
     device_name = jmespath.search(f"devices[?id=='{device_id}'].name", devices)[0]
     rules_to_execute = jmespath.search(f"rules[?device_name=='{device_name}']", rules)
+    logger.debug("rules_to_execute: %s", rules_to_execute)
     for rule in rules_to_execute:
         expression=rule.get("expression").split(" ")
         field = expression[0]
-        field_value = get_fahrenheit(eval(device_id).get(field))
+        field_value = get_fahrenheit(event.get(field))
         operation = expression[1]
         value = expression[2]
         if eval(f"{field_value} {operation} {value}"):

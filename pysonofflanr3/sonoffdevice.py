@@ -6,7 +6,7 @@ import asyncio
 import json
 import logging
 import sys
-import rules
+from pysonofflanr3 import rules
 from typing import Callable, Awaitable, Dict
 import traceback
 from pysonofflanr3 import SonoffLANModeClient
@@ -305,9 +305,7 @@ class SonoffDevice(object):
             self.message_ping_event.set()
 
             response = json.loads(message.decode("utf-8"))
-            self.logger.debug("Before")
-            rules.evaluate_rules(response)
-            self.logger.debug("After")
+            rules.evaluate_rules(response, self.device_id, self.logger)
             if self.client.type == b"strip":
 
                 if self.outlet is None:
