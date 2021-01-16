@@ -2,12 +2,19 @@ var schema = "testlan"
 
 const TuyAPI = require('tuyapi');
 console.log(process.argv);
-number = process.argv[2]
-desiredState = process.argv[3]
+ip = process.argv[2]
+number = process.argv[3]
+desiredState = process.argv[4]
 
+
+
+// execute touch command synchronously
+// to create three text file
+
+console.log(`Current ip: ${ipAddress}`);
+var ip = ipAddress
 const device = new TuyAPI({
-    ip: "192.168.1.193",
-//   id: '34062563a4cf12e5c9ad',
+  ip: ip,
   key: '489d4795c28c17ce',
   issueGetOnConnect: false});
 
@@ -15,7 +22,7 @@ const device = new TuyAPI({
   await device.find();
 
   await device.connect();
-
+if (number != "status"){
   let statusObj = await device.get(options={"schema": true});
   let statusString = JSON.stringify(statusObj)
   let status = statusObj.dps[number]
@@ -31,8 +38,8 @@ const device = new TuyAPI({
   else {
     console.log(`No need to change state to: ${desiredState}`);
   }
-
-  status = await device.get();
+}
+  status = JSON.stringify(await device.get(options={"schema": true}));
 
   console.log(`New status: ${status}.`);
 

@@ -23,7 +23,15 @@ def load_yaml(filename):
 def get_fahrenheit(degrees_celsius):
     return (degrees_celsius * 1.8) + 32
 
+def get_ip_from_mac(mac_address):
+    cmd = f"arp -a | grep {mac_address} |sed \"s/.*(//g\" | sed \"s/).*//g\" | tr -d '\n'"
+    ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    output = ps.communicate()[0]
+    return output.decode("utf-8")
+
 def evaluate_rules(event, device_id, logger):
+    mac_address = "a4:cf:12:e5:c9:ad"
+    ip_address = get_ip_from_mac(mac_address)
     print(f"in evaluation event: {event}")
     rules = load_yaml('rules.yml')
     devices = load_yaml("device_info.yml")
@@ -42,7 +50,7 @@ def evaluate_rules(event, device_id, logger):
         value = expression[2]
         if eval(f"{field_value} {operation} {value}"):
             for action in rule.get("actions"):
-                run = f"node src/main.js {action}"
+                run = f"node src/main.js {ip_address} {action}"
                 subprocess.run(run.split())
 
 # evaluate_rules()
