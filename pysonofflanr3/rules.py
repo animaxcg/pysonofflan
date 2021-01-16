@@ -24,7 +24,7 @@ def get_fahrenheit(degrees_celsius):
     return (degrees_celsius * 1.8) + 32
 
 def get_ip_from_mac(mac_address):
-    cmd = f"arp -a | grep {mac_address} |sed \"s/.*(//g\" | sed \"s/).*//g\" | tr -d '\n'"
+    cmd = f"arp -a | grep -i {mac_address} |sed \"s/.*(//g\" | sed \"s/).*//g\" | tr -d '\n'"
     ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     output = ps.communicate()[0]
     return output.decode("utf-8")
