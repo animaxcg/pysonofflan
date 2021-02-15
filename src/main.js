@@ -11,8 +11,7 @@ desiredState = process.argv[4]
 // execute touch command synchronously
 // to create three text file
 
-console.log(`Current ip: ${ipAddress}`);
-var ip = ipAddress
+console.log(`Current ip: ${ip}`);
 const device = new TuyAPI({
   ip: ip,
   key: '489d4795c28c17ce',

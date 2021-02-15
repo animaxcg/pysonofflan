@@ -1,19 +1,16 @@
-
-
-
 import yaml
 import subprocess
 import jmespath
 
-def to_snake_case(str): 
-    res = [str[0].lower()] 
-    for c in str[1:]: 
-        if c in ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'): 
-            res.append('_') 
-            res.append(c.lower()) 
-        else: 
+def to_snake_case(str):
+    res = [str[0].lower()]
+    for c in str[1:]:
+        if c in ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
+            res.append('_')
+            res.append(c.lower())
+        else:
             res.append(c)
-    return ''.join(res) 
+    return ''.join(res)
 
 def load_yaml(filename):
     with open(filename) as f:
@@ -24,6 +21,15 @@ def get_fahrenheit(degrees_celsius):
     return (degrees_celsius * 1.8) + 32
 
 def get_ip_from_mac(mac_address):
+
+    ip_cmd="ifconfig | grep inet | awk '{print $2}' | head -1"
+    ip_ps = subprocess.Popen(ip_cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    ip = ip_ps.communicate()[0].decode("utf-8")
+    truple=".".join(ip.split(".")[0:3])
+    cidr=f'{truple}.0/24'
+    nmap_cmd=f"nmap {cidr}"
+    nmap_ps = subprocess.Popen(nmap_cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    nmap = nmap_ps.communicate()[0].decode("utf-8")
     cmd = f"arp -a | grep -i {mac_address} |sed \"s/.*(//g\" | sed \"s/).*//g\" | tr -d '\n'"
     ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     output = ps.communicate()[0]
@@ -50,6 +56,7 @@ def evaluate_rules(event, device_id, logger):
         value = expression[2]
         if eval(f"{field_value} {operation} {value}"):
             for action in rule.get("actions"):
+                print("ip_address: {}".format(ip_address))
                 run = f"node src/main.js {ip_address} {action}"
                 subprocess.run(run.split())
 
@@ -57,4 +64,3 @@ def evaluate_rules(event, device_id, logger):
 
 # TODO one command to turn on (fix on js side and here)
 # TODO save desired state and evaluate with js periodically (5 min)
-
